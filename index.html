@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>低渣飲食菜單</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#2f8f6b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="低渣菜單">
+<style>
+:root{--bg:#f5f3ee;--card:#fff;--ink:#22231f;--sub:#6d6f68;--line:#e2ded4;--accent:#2f8f6b;--soft:#e7f3ed;--warn:#b5462f;--warnsoft:#fbece8;--chip:#f0ede6}
+@media (prefers-color-scheme: dark){:root{--bg:#151714;--card:#1f221e;--ink:#eef0ea;--sub:#a3a79d;--line:#343830;--accent:#5cc49a;--soft:#1d3329;--warn:#f08a72;--warnsoft:#3a2420;--chip:#2a2e28}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:16px;line-height:1.5;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+header{padding:calc(14px + env(safe-area-inset-top)) 16px 4px;max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{font-size:21px;margin:0}
+header small{display:block;color:var(--sub);font-size:13px;font-weight:400}
+.iconbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:8px 16px 24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.card h2{font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.card h2 .tag{font-size:12px;font-weight:500;color:var(--accent);background:var(--soft);border-radius:999px;padding:2px 9px}
+.dish{display:flex;align-items:center;gap:8px;padding:9px 0;border-top:1px dashed var(--line)}
+.dish:first-of-type{border-top:0}
+.dish .nm{flex:1;min-width:0;cursor:pointer}
+.dish .nm b{font-weight:600}
+.dish .nm span{display:block;font-size:12.5px;color:var(--sub)}
+.dish .swapped{color:var(--accent);font-size:12px;margin-left:4px}
+.btn{border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:9px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+.daynav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 12px}
+.daynav .t{text-align:center;flex:1}
+.daynav .t b{font-size:20px;display:block}
+.daynav .t span{font-size:13px;color:var(--sub)}
+.daynav .btn{font-size:18px;padding:6px 14px}
+.notice{background:var(--warnsoft);color:var(--warn);border-radius:12px;padding:10px 14px;font-size:13.5px;margin-bottom:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+input[type=search],input[type=date],select{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:9px 11px}
+.daygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.dcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:13.5px}
+.dcard.today{border:2px solid var(--accent)}
+.dcard b{font-size:15px}
+.dcard div{color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dcard div em{font-style:normal;color:var(--ink)}
+.rlist .dish .nm b{font-size:15.5px}
+.shop li{list-style:none;display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+.shop li:first-child{border-top:0}
+.shop ul{padding:0;margin:0}
+.shop input{width:22px;height:22px;accent-color:var(--accent)}
+.shop li.done span{text-decoration:line-through;color:var(--sub)}
+.shop .q{margin-left:auto;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+.guide{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.guide h3{font-size:14px;margin:0 0 6px}
+.guide ul{margin:0;padding-left:18px;font-size:14px}
+.guide li{margin:3px 0}
+.ok h3{color:var(--accent)}.no h3{color:var(--warn)}
+@media (max-width:520px){.guide{grid-template-columns:1fr}}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;max-width:150px;border:0;background:none;color:var(--sub);font:inherit;font-size:12.5px;padding:8px 0 9px;cursor:pointer}
+nav button i{display:block;font-style:normal;font-size:21px;line-height:1.2}
+nav button.on{color:var(--accent);font-weight:600}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.modal.show{display:flex}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:90vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 18px calc(24px + env(safe-area-inset-bottom))}
+@media (min-width:700px){.modal{align-items:center}.sheet{border-radius:18px}}
+.sheet h2{margin:0 0 4px;font-size:21px}
+.sheet .meta{color:var(--sub);font-size:13.5px;margin-bottom:12px}
+.sheet h3{font-size:15px;margin:14px 0 6px}
+.sheet table{width:100%;border-collapse:collapse;font-size:15px}
+.sheet td{padding:6px 0;border-bottom:1px dashed var(--line)}
+.sheet td:last-child{text-align:right;color:var(--sub);white-space:nowrap}
+.sheet ol{padding-left:22px;margin:0}
+.sheet ol li{margin:6px 0}
+.tip{background:var(--soft);border-radius:10px;padding:9px 12px;font-size:14px;margin-top:12px}
+.close{float:right}
+.row{display:flex;gap:10px;align-items:center;margin:10px 0}
+.row label{min-width:80px;font-size:14px;color:var(--sub)}
+.muted{color:var(--sub);font-size:13.5px}
+.thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;flex:none;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:26px}
+.hero{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;margin:10px 0 4px;background:var(--chip)}
+.credit{font-size:11.5px;color:var(--sub);margin-bottom:8px;word-break:break-all}
+.credit a{color:var(--sub)}
+.hide{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>低渣飲食菜單</h1><small id="hdrSub"></small></div>
+  <button class="iconbtn" id="btnSet">⚙ 設定</button>
+</header>
+<main>
+  <section id="tab-today"></section>
+  <section id="tab-menu" class="hide"></section>
+  <section id="tab-recipes" class="hide"></section>
+  <section id="tab-shop" class="hide"></section>
+  <section id="tab-guide" class="hide"></section>
+</main>
+<nav>
+  <button data-t="today" class="on"><i>🍽</i>今天</button>
+  <button data-t="menu"><i>📅</i>30天菜單</button>
+  <button data-t="recipes"><i>📖</i>食譜</button>
+  <button data-t="shop"><i>🛒</i>採買</button>
+  <button data-t="guide"><i>✅</i>能不能吃</button>
+</nav>
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script>
+const DATA = {"recipes":[{"id":"rice","cat":"R","name":"白飯","ings":[["白米",80,"g"]],"steps":["白米洗淨，加 1.2 倍水浸泡 20 分鐘。","電鍋外鍋 1 杯水蒸熟，跳起再燜 10 分鐘。"],"tip":"恢復期可多加一點水煮得較軟；不要用糙米、五穀米、紫米。","mins":40},{"id":"b_salmon_congee","cat":"B","name":"鮭魚蛋花粥","ings":[["白米",50,"g"],["鮭魚片（去皮去刺）",60,"g"],["雞蛋",1,"顆"],["薑片",1,"片"],["鹽",null,"少許"]],"steps":["白米加 8 倍水煮滾，轉小火煮 25 分鐘成粥。","鮭魚切小丁，和薑片放入粥中煮 5 分鐘。","取出薑片，淋入打散的蛋液，輕輕攪拌成蛋花。","加鹽調味即可。"],"tip":"用刀背壓過魚肉，確認沒有細刺再下鍋。","mins":35},{"id":"b_chicken_congee","cat":"B","name":"雞絲南瓜粥","ings":[["白米",50,"g"],["雞胸肉",50,"g"],["南瓜（去皮去籽）",60,"g"],["鹽",null,"少許"]],"steps":["南瓜切小丁，雞胸肉燙熟後撕成細絲。","白米加 8 倍水與南瓜一起煮滾，小火煮 25 分鐘。","加入雞絲再煮 3 分鐘，加鹽調味。"],"tip":"南瓜一定要去皮去籽並煮到軟爛。","mins":35},{"id":"b_egg_toast","cat":"B","name":"滑蛋白吐司","ings":[["白吐司",2,"片"],["雞蛋",2,"顆"],["鮮奶油或水",15,"ml"],["鹽",null,"少許"],["植物油",null,"少許"]],"steps":["白吐司切去硬邊。","雞蛋加水（或少量鮮奶油）和鹽打散。","平底鍋少油、小火，倒入蛋液慢慢推成滑嫩炒蛋。","炒蛋夾入吐司即可。"],"tip":"吐司請用白吐司，避免全麥、雜糧、葡萄乾吐司。","mins":10},{"id":"b_steamed_egg_bun","cat":"B","name":"蒸蛋＋白饅頭","ings":[["雞蛋",2,"顆"],["白饅頭",1,"個"],["鹽",null,"少許"]],"steps":["雞蛋打散，加 1.5 倍溫水和鹽拌勻，過篩去泡。","蓋上盤子或保鮮膜，電鍋外鍋半杯水蒸到跳起。","白饅頭一起放入電鍋蒸熱。"],"tip":"饅頭選白饅頭，不要雜糧、黑糖桂圓或堅果口味。","mins":20},{"id":"b_pork_congee","cat":"B","name":"瘦肉皮蛋粥","ings":[["白米",50,"g"],["豬絞肉（瘦）",50,"g"],["皮蛋",1,"顆"],["鹽",null,"少許"],["白胡椒",null,"極少"]],"steps":["白米加 8 倍水煮成粥。","絞肉用少許水拌開，倒入粥中攪散煮熟。","皮蛋切小丁加入，煮 2 分鐘後調味。"],"tip":"恢復期胡椒可以省略。","mins":35},{"id":"b_french_toast","cat":"B","name":"法式吐司","ings":[["白吐司",2,"片"],["雞蛋",1,"顆"],["鮮奶油或水",20,"ml"],["砂糖",null,"少許"],["奶油",5,"g"]],"steps":["吐司去邊，每片切成 4 塊。","雞蛋、水（或少量鮮奶油）、糖打勻，吐司兩面沾滿蛋液。","平底鍋放奶油，小火把兩面煎到金黃。"],"tip":"只用少量奶油，不要煎到焦脆。","mins":15},{"id":"b_noodle_soup","cat":"B","name":"蛋花麵線","ings":[["白麵線",50,"g"],["雞蛋",1,"顆"],["雞高湯",300,"ml"],["鹽",null,"少許"]],"steps":["麵線先燙過去除鹹味，撈起備用。","高湯煮滾，淋入蛋液成蛋花。","放入麵線煮 1 分鐘即可。"],"tip":"用白麵線，不要紅麵線（含較多添加物、偏鹹）。","mins":10},{"id":"b_tuna_sandwich","cat":"B","name":"鮪魚蛋沙拉三明治","ings":[["白吐司",2,"片"],["水煮鮪魚罐頭",40,"g"],["雞蛋",1,"顆"],["美乃滋",10,"g"]],"steps":["雞蛋水煮 10 分鐘，剝殼壓碎。","鮪魚瀝乾，和蛋碎、美乃滋拌勻。","吐司去邊，夾入內餡對切。"],"tip":"鮪魚選水煮的，不要油漬或加辣口味；不加生菜、小黃瓜。","mins":15},{"id":"b_potato_soup_toast","cat":"B","name":"馬鈴薯濃湯＋白吐司","ings":[["馬鈴薯（去皮）",120,"g"],["洋蔥",20,"g"],["雞高湯",250,"ml"],["白吐司",1,"片"],["鹽",null,"少許"]],"steps":["馬鈴薯、洋蔥切小塊，加高湯煮 15 分鐘到軟爛。","用果汁機或湯匙壓成細滑的濃湯，加鹽調味。","搭配去邊白吐司。"],"tip":"洋蔥要煮到完全軟化；可以省略。","mins":25},{"id":"b_rice_noodle","cat":"B","name":"雞肉米粉湯","ings":[["細米粉",40,"g"],["雞胸肉",50,"g"],["紅蘿蔔（去皮）",20,"g"],["雞高湯",350,"ml"],["鹽",null,"少許"]],"steps":["米粉泡軟；雞胸切細絲、紅蘿蔔切細絲。","高湯煮滾，放入紅蘿蔔煮 5 分鐘到軟。","放入雞絲、米粉煮 3 分鐘，加鹽。"],"tip":"米粉選純米製品。","mins":20},{"id":"b_pancake","cat":"B","name":"香蕉鬆餅","ings":[["低筋麵粉",50,"g"],["雞蛋",1,"顆"],["香蕉",0.5,"根"],["水",50,"ml"],["泡打粉",null,"少許"],["砂糖",null,"少許"]],"steps":["香蕉壓成泥，和雞蛋、水、糖拌勻。","加入麵粉和泡打粉拌到無粉粒。","平底鍋不放油或極少油，小火煎成小圓餅。"],"tip":"香蕉要選熟透的；不加堅果、巧克力豆。","mins":15},{"id":"b_fish_congee","cat":"B","name":"鯛魚粥","ings":[["白米",50,"g"],["鯛魚片",70,"g"],["薑絲",1,"片"],["鹽",null,"少許"]],"steps":["白米加 8 倍水煮成粥。","鯛魚片切小塊，和薑絲下粥煮 3 分鐘。","加鹽調味。"],"tip":"鯛魚片通常無刺，仍建議切塊時再檢查一次。","mins":35},{"id":"m_steam_bass","cat":"M","name":"清蒸鱸魚片","ings":[["鱸魚片（無刺）",120,"g"],["薑片",2,"片"],["蔥白",1,"段"],["醬油",null,"少許"],["米酒",null,"少許"]],"steps":["魚片洗淨擦乾，放盤上鋪薑片、蔥白。","電鍋外鍋半杯水蒸 10 分鐘。","取出薑蔥，淋少許醬油即可。"],"tip":"買市售「無刺鱸魚片」最安全；蔥只用蔥白、不吃蔥綠。","mins":15},{"id":"m_minced_pork_tofu","cat":"M","name":"肉末燴嫩豆腐","ings":[["嫩豆腐",150,"g"],["豬絞肉（瘦）",60,"g"],["醬油",null,"少許"],["太白粉水",null,"少許"],["植物油",null,"少許"]],"steps":["嫩豆腐切小塊，熱水燙 1 分鐘撈起。","少油炒散絞肉到變色，加 100ml 水和醬油煮滾。","放入豆腐燜煮 3 分鐘，用太白粉水勾薄芡。"],"tip":"不加辣豆瓣、蒜末；這道是麻婆豆腐的低渣版本。","mins":15},{"id":"m_chicken_potato","cat":"M","name":"日式馬鈴薯燉雞","ings":[["去皮雞腿肉",120,"g"],["馬鈴薯（去皮）",100,"g"],["紅蘿蔔（去皮）",40,"g"],["醬油",null,"少許"],["味醂",null,"少許"]],"steps":["雞腿去皮切塊，馬鈴薯、紅蘿蔔切滾刀塊。","鍋中放雞肉、蔬菜，加水蓋過食材。","加醬油、味醂，小火燉 25 分鐘到馬鈴薯軟爛。"],"tip":"紅蘿蔔要燉到筷子一壓就碎。","mins":35},{"id":"m_steamed_patty","cat":"M","name":"冬瓜蒸肉餅","ings":[["豬絞肉（瘦）",100,"g"],["冬瓜（去皮去籽）",50,"g"],["雞蛋白",1,"份"],["醬油",null,"少許"],["太白粉",null,"少許"]],"steps":["冬瓜磨成泥並擠掉部分水分。","絞肉加冬瓜泥、蛋白、醬油、太白粉朝同方向攪拌到有黏性。","壓成扁圓餅放盤中，電鍋外鍋 1 杯水蒸熟。"],"tip":"肉餅要壓薄，比較容易蒸透、口感也更嫩。","mins":30},{"id":"m_salmon_miso","cat":"M","name":"味噌煮鮭魚","ings":[["鮭魚片（去皮去刺）",120,"g"],["白味噌",10,"g"],["味醂",null,"少許"]],"steps":["鍋中加 120ml 水煮滾，拌開味噌和味醂。","放入鮭魚，蓋上鍋蓋小火煮 8 分鐘。","把湯汁淋在魚上即可。"],"tip":"用白味噌（顆粒較少）；若味噌有豆粒可先過篩。","mins":15},{"id":"m_chicken_egg","cat":"M","name":"雞肉滑蛋","ings":[["雞胸肉",80,"g"],["雞蛋",2,"顆"],["鹽",null,"少許"],["太白粉",null,"少許"],["植物油",null,"少許"]],"steps":["雞胸切薄片，抓少許鹽和太白粉。","少油把雞肉炒熟盛起。","蛋液加鹽打散，倒入鍋中稍凝固時放回雞肉，輕推到半熟即關火。"],"tip":"用小火慢推，蛋才會滑嫩。","mins":15},{"id":"m_shrimp_egg","cat":"M","name":"蝦仁蒸蛋","ings":[["雞蛋",2,"顆"],["蝦仁",60,"g"],["鹽",null,"少許"]],"steps":["蝦仁去腸泥切小段。","蛋液加 1.5 倍溫水和鹽，過篩後倒入碗中。","放上蝦仁，蓋盤子，電鍋外鍋半杯水蒸熟。"],"tip":"腸泥一定要挑乾淨。","mins":20},{"id":"m_teriyaki","cat":"M","name":"照燒雞腿（去皮）","ings":[["去皮雞腿肉",130,"g"],["醬油",null,"少許"],["味醂",null,"少許"],["砂糖",null,"少許"],["植物油",null,"少許"]],"steps":["雞腿肉去皮去筋，用叉子戳洞。","少油小火把兩面煎熟。","倒入醬油、味醂、糖和少許水，收汁到濃稠，切片。"],"tip":"去皮去筋；不要煎到焦脆。","mins":20},{"id":"m_fish_tofu","cat":"M","name":"鯛魚燴豆腐","ings":[["鯛魚片",100,"g"],["嫩豆腐",100,"g"],["紅蘿蔔（去皮）",20,"g"],["鹽",null,"少許"],["太白粉水",null,"少許"]],"steps":["鯛魚、豆腐切塊；紅蘿蔔切薄片。","鍋中放 200ml 水，煮紅蘿蔔 5 分鐘。","放入豆腐、魚片煮 4 分鐘，加鹽，勾薄芡。"],"tip":"魚片下鍋後不要一直翻動，以免碎掉。","mins":20},{"id":"m_lion_head","cat":"M","name":"白菜嫩獅子頭","ings":[["豬絞肉（瘦）",100,"g"],["大白菜嫩葉",80,"g"],["雞蛋白",1,"份"],["醬油",null,"少許"],["太白粉",null,"少許"]],"steps":["絞肉加蛋白、醬油、太白粉攪拌出黏性，捏成 2 顆肉丸。","白菜只取嫩葉部分，切小片。","鍋中加水蓋過肉丸，加白菜小火燉 30 分鐘到白菜軟爛。"],"tip":"白菜去掉粗梗、只用嫩葉並燉到軟爛。","mins":40},{"id":"m_white_chicken","cat":"M","name":"白斬雞（去皮）","ings":[["雞腿（去骨去皮）",130,"g"],["薑片",2,"片"],["醬油",null,"少許"]],"steps":["水加薑片煮滾，放入雞腿，轉最小火燜煮 15 分鐘。","關火再燜 10 分鐘，取出切片。","沾少許醬油或淋少許雞湯。"],"tip":"不沾蒜泥、辣椒醬。","mins":30},{"id":"m_cod_steam","cat":"M","name":"清蒸鱈魚","ings":[["圓鱈（去刺）",120,"g"],["薑片",2,"片"],["醬油",null,"少許"]],"steps":["鱈魚擦乾，鋪上薑片。","電鍋外鍋半杯水蒸 10 分鐘。","淋少許醬油。"],"tip":"請買「圓鱈」，避免扁鱈或標示不清的油魚（容易拉肚子）。","mins":15},{"id":"m_tomato_beef","cat":"M","name":"番茄燉牛絞肉","ings":[["牛絞肉（瘦）",90,"g"],["番茄（去皮去籽）",120,"g"],["洋蔥",30,"g"],["鹽",null,"少許"],["砂糖",null,"少許"],["植物油",null,"少許"]],"steps":["番茄頂部劃十字，燙 30 秒去皮，切開挖掉籽，切丁。","洋蔥切碎，少油炒軟，加牛絞肉炒散。","加番茄和 100ml 水，小火燉 15 分鐘到番茄化開，調味。"],"tip":"番茄皮和籽一定要去掉；洋蔥要炒到軟透。","mins":30},{"id":"m_shrimp_scramble","cat":"M","name":"蝦仁滑蛋","ings":[["蝦仁",80,"g"],["雞蛋",2,"顆"],["鹽",null,"少許"],["植物油",null,"少許"]],"steps":["蝦仁去腸泥，燙熟。","蛋液加鹽打散，放入蝦仁。","少油小火，倒入蛋液輕推到半凝固即可。"],"tip":"蝦子先燙熟再炒，蛋才不會過老。","mins":10},{"id":"m_pumpkin_chicken","cat":"M","name":"南瓜燉雞","ings":[["去皮雞腿肉",120,"g"],["南瓜（去皮去籽）",120,"g"],["鹽",null,"少許"]],"steps":["雞腿切塊燙去血水；南瓜切大塊。","鍋中放雞肉、南瓜，加水蓋過，小火燉 25 分鐘。","南瓜燉到半化開成濃稠湯汁，加鹽。"],"tip":"南瓜燉化後湯汁很濃郁，可直接拌飯。","mins":35},{"id":"m_pork_slices","cat":"M","name":"醬燒豬里肌片","ings":[["豬里肌（去筋）",110,"g"],["醬油",null,"少許"],["味醂",null,"少許"],["太白粉",null,"少許"],["植物油",null,"少許"]],"steps":["里肌切薄片，用刀背拍鬆，抓少許太白粉。","少油小火把肉片兩面煎熟。","加醬油、味醂和少許水煮到收汁。"],"tip":"拍鬆、切薄比較嫩，咀嚼負擔小。","mins":15},{"id":"m_salmon_butter","cat":"M","name":"奶油香煎鮭魚","ings":[["鮭魚片（去皮去刺）",120,"g"],["奶油",5,"g"],["鹽",null,"少許"]],"steps":["鮭魚擦乾，撒少許鹽。","平底鍋放奶油小火融化，放入鮭魚。","每面煎 3 分鐘到熟即可。"],"tip":"鮭魚本身就有油，奶油只要一點點；不要煎到焦。","mins":10},{"id":"m_chicken_meatball","cat":"M","name":"雞肉丸子燴冬瓜","ings":[["雞絞肉",100,"g"],["冬瓜（去皮去籽）",120,"g"],["雞蛋白",1,"份"],["鹽",null,"少許"],["太白粉",null,"少許"]],"steps":["雞絞肉加蛋白、鹽、太白粉攪出黏性，捏成小丸子。","冬瓜切塊加 250ml 水煮 10 分鐘。","放入丸子煮 8 分鐘到浮起熟透，可勾薄芡。"],"tip":"雞絞肉選雞胸或去皮雞腿絞的。","mins":25},{"id":"m_egg_tofu","cat":"M","name":"蛋豆腐燴肉末","ings":[["雞蛋豆腐",1,"盒"],["豬絞肉（瘦）",50,"g"],["醬油",null,"少許"],["太白粉水",null,"少許"],["植物油",null,"少許"]],"steps":["蛋豆腐切厚片。","少油炒散絞肉，加醬油和 100ml 水煮滾。","放入蛋豆腐煮 3 分鐘，勾薄芡。"],"tip":"不用煎蛋豆腐，直接燴比較軟嫩。","mins":15},{"id":"o_udon","cat":"O","name":"雞肉烏龍湯麵","ings":[["烏龍麵",1,"包"],["雞胸肉",70,"g"],["紅蘿蔔（去皮）",20,"g"],["柴魚高湯",400,"ml"],["醬油",null,"少許"]],"steps":["雞胸切薄片；紅蘿蔔切薄片。","高湯煮滾，紅蘿蔔煮 5 分鐘到軟。","放入雞肉、烏龍麵煮 3 分鐘，加醬油調味。"],"tip":"不加海帶芽、蔥花、七味粉。","mins":15},{"id":"o_oyakodon","cat":"O","name":"親子丼","ings":[["白飯",1,"碗"],["去皮雞腿肉",90,"g"],["雞蛋",2,"顆"],["洋蔥",30,"g"],["醬油",null,"少許"],["味醂",null,"少許"]],"steps":["雞肉切小塊、洋蔥切細絲。","小鍋加 100ml 水、醬油、味醂，煮洋蔥到軟，再放雞肉煮熟。","淋入蛋液，蓋鍋燜 1 分鐘到半熟，鋪在白飯上。"],"tip":"洋蔥要煮到透明軟爛，也可省略。","mins":20},{"id":"o_tomato_egg_noodle","cat":"O","name":"番茄蛋湯麵","ings":[["白麵條",80,"g"],["番茄（去皮去籽）",100,"g"],["雞蛋",1,"顆"],["雞高湯",350,"ml"],["鹽",null,"少許"],["植物油",null,"少許"]],"steps":["番茄燙過去皮去籽、切丁。","少油把番茄炒軟出汁，加高湯煮 5 分鐘。","淋入蛋液成蛋花；另煮麵條，放入湯中。"],"tip":"用白麵條，不要全麥麵、蕎麥麵。","mins":15},{"id":"o_pork_rice","cat":"O","name":"肉燥燴飯（不油）","ings":[["白飯",1,"碗"],["豬絞肉（瘦）",80,"g"],["紅蘿蔔（去皮）",30,"g"],["醬油",null,"少許"],["太白粉水",null,"少許"],["植物油",null,"少許"]],"steps":["紅蘿蔔切細丁，先煮軟。","少油炒散絞肉，加紅蘿蔔、醬油和 150ml 水煮 5 分鐘。","勾芡後淋在白飯上。"],"tip":"不加油蔥酥、香菇、筍丁。","mins":20},{"id":"o_chicken_misua","cat":"O","name":"雞絲麵線","ings":[["白麵線",60,"g"],["雞胸肉",70,"g"],["雞高湯",350,"ml"],["鹽",null,"少許"]],"steps":["雞胸燙熟撕細絲；麵線先燙過。","高湯煮滾放入麵線、雞絲。","加鹽調味。"],"tip":"雞胸撕得越細越好入口。","mins":15},{"id":"o_salmon_risotto","cat":"O","name":"鮭魚南瓜燉飯","ings":[["白飯",1,"碗"],["鮭魚片（去皮去刺）",70,"g"],["南瓜（去皮去籽）",80,"g"],["雞高湯",250,"ml"],["鹽",null,"少許"]],"steps":["南瓜蒸軟壓成泥。","鍋中放高湯、南瓜泥、白飯，小火煮到濃稠。","鮭魚切丁放入煮 4 分鐘，調味。"],"tip":"用白飯就能做，比生米燉飯省時。","mins":20},{"id":"o_beef_noodle","cat":"O","name":"清燉牛肉湯麵","ings":[["白麵條",80,"g"],["牛腱（去筋）",80,"g"],["白蘿蔔（去皮）",60,"g"],["薑片",2,"片"],["鹽",null,"少許"]],"steps":["牛腱燙去血水，加薑片和水燉 60 分鐘到軟。","白蘿蔔切塊放入再燉 20 分鐘。","牛肉切薄片，麵另煮，加入湯中。"],"tip":"可一次燉 3–4 份分裝冷凍；牛腱要燉到軟爛。","mins":90},{"id":"o_fried_rice","cat":"O","name":"蛋炒飯（少油）","ings":[["白飯",1,"碗"],["雞蛋",2,"顆"],["火腿",1,"片"],["紅蘿蔔（去皮）",20,"g"],["鹽",null,"少許"],["植物油",null,"少許"]],"steps":["紅蘿蔔切細丁燙軟；火腿切丁。","少油炒蛋到半熟，加入白飯炒散。","加火腿、紅蘿蔔炒勻，加鹽。"],"tip":"不加玉米、青豆、蔥花。","mins":15},{"id":"o_fish_rice_soup","cat":"O","name":"鱸魚湯泡飯","ings":[["白飯",1,"碗"],["鱸魚片（無刺）",90,"g"],["薑絲",1,"片"],["鹽",null,"少許"]],"steps":["水 400ml 加薑絲煮滾。","放入鱸魚片煮 3 分鐘，撈除浮沫。","加入白飯煮 3 分鐘，加鹽。"],"tip":"飯泡久一點更軟，適合沒胃口的時候。","mins":15},{"id":"o_chawan_udon","cat":"O","name":"雞蛋豆腐烏龍麵","ings":[["烏龍麵",1,"包"],["嫩豆腐",80,"g"],["雞蛋",1,"顆"],["柴魚高湯",400,"ml"],["醬油",null,"少許"]],"steps":["高湯煮滾，放入切塊嫩豆腐。","放入烏龍麵煮 2 分鐘。","打入一顆蛋，煮到喜歡的熟度，加醬油。"],"tip":"蛋要煮熟（蛋黃至少半凝固）。","mins":10},{"id":"v_zucchini","cat":"V","name":"清炒去皮櫛瓜","ings":[["櫛瓜（去皮去籽）",150,"g"],["鹽",null,"少許"],["植物油",null,"少許"]],"steps":["櫛瓜削皮、對剖挖籽、切薄片。","少油下鍋，加 2 大匙水炒到軟。","加鹽調味。"],"tip":"去皮去籽後非常軟嫩。","mins":10},{"id":"v_winter_melon","cat":"V","name":"燴冬瓜","ings":[["冬瓜（去皮去籽）",180,"g"],["蝦米",3,"g"],["鹽",null,"少許"],["太白粉水",null,"少許"]],"steps":["冬瓜切薄片；蝦米泡軟切碎。","加 150ml 水把冬瓜煮到透明。","加蝦米、鹽，勾薄芡。"],"tip":"蝦米可省略。","mins":15},{"id":"v_loofah_egg","cat":"V","name":"絲瓜燴蛋","ings":[["絲瓜（去皮）",150,"g"],["雞蛋",1,"顆"],["鹽",null,"少許"],["植物油",null,"少許"]],"steps":["絲瓜削皮切塊。","少油炒蛋成塊盛起。","下絲瓜加少許水煮軟，放回蛋拌勻調味。"],"tip":"絲瓜皮要削乾淨，綠色硬皮纖維高。","mins":10},{"id":"v_carrot_egg","cat":"V","name":"紅蘿蔔炒蛋","ings":[["紅蘿蔔（去皮）",80,"g"],["雞蛋",1,"顆"],["鹽",null,"少許"],["植物油",null,"少許"]],"steps":["紅蘿蔔刨細絲，加少許水先蒸或煮軟。","少油炒紅蘿蔔，再淋入蛋液炒熟。","加鹽。"],"tip":"紅蘿蔔一定要先煮軟。","mins":15},{"id":"v_spinach","cat":"V","name":"燙菠菜嫩葉","ings":[["菠菜嫩葉",80,"g"],["鹽",null,"少許"],["香油",null,"幾滴"]],"steps":["只摘取菠菜的嫩葉，去掉莖和梗。","滾水燙 1 分鐘到軟，擠乾切碎。","拌少許鹽、香油。"],"tip":"恢復初期若醫師說暫不吃葉菜，可換成其他瓜類。","mins":10},{"id":"v_pumpkin_mash","cat":"V","name":"南瓜泥","ings":[["南瓜（去皮去籽）",150,"g"],["鹽",null,"少許"]],"steps":["南瓜切塊，電鍋外鍋 1 杯水蒸軟。","趁熱壓成泥，加少許鹽或糖。"],"tip":"可當配菜，也能拌進粥裡。","mins":25},{"id":"v_potato_mash","cat":"V","name":"馬鈴薯泥","ings":[["馬鈴薯（去皮）",150,"g"],["奶油",5,"g"],["鹽",null,"少許"]],"steps":["馬鈴薯切塊蒸 20 分鐘到軟。","趁熱壓泥，拌入奶油和鹽。","太乾可加少許熱水。"],"tip":"有發芽或綠皮的馬鈴薯不要吃。","mins":25},{"id":"v_cucumber","cat":"V","name":"大黃瓜燴肉末","ings":[["大黃瓜（去皮去籽）",150,"g"],["豬絞肉（瘦）",30,"g"],["鹽",null,"少許"],["植物油",null,"少許"]],"steps":["大黃瓜削皮挖籽、切塊。","少油炒散絞肉，放大黃瓜加 100ml 水。","小火煮 10 分鐘到透明軟爛，加鹽。"],"tip":"是大黃瓜（煮熟），不是生吃的小黃瓜。","mins":15},{"id":"v_chayote","cat":"V","name":"清炒佛手瓜","ings":[["佛手瓜（去皮）",150,"g"],["鹽",null,"少許"],["植物油",null,"少許"]],"steps":["佛手瓜削皮、去中間籽，切細絲。","少油加水炒到軟。","加鹽。"],"tip":"削皮時會有黏液，可戴手套。","mins":10},{"id":"v_eggplant","cat":"V","name":"蒸茄泥","ings":[["茄子（去皮）",150,"g"],["醬油",null,"少許"],["香油",null,"幾滴"]],"steps":["茄子削皮切段，電鍋蒸 10 分鐘到軟。","用筷子撕成細條或壓成泥。","淋少許醬油、香油。"],"tip":"茄子皮一定要削掉；不加蒜泥。","mins":15},{"id":"v_radish","cat":"V","name":"燉白蘿蔔","ings":[["白蘿蔔（去皮）",150,"g"],["醬油",null,"少許"],["柴魚高湯",200,"ml"]],"steps":["白蘿蔔削厚皮切圓片。","用高湯小火燉 25 分鐘到透明。","加少許醬油。"],"tip":"外層有纖維的皮要削厚一點。","mins":30},{"id":"v_carrot_glaze","cat":"V","name":"奶油紅蘿蔔","ings":[["紅蘿蔔（去皮）",120,"g"],["奶油",5,"g"],["砂糖",null,"少許"]],"steps":["紅蘿蔔切圓片，加水煮 15 分鐘到軟。","倒掉多餘的水，加奶油、糖拌勻。"],"tip":"要煮到可以用湯匙切開的軟度。","mins":20},{"id":"s_melon_rib","cat":"S","name":"冬瓜排骨湯","ings":[["豬小排",100,"g"],["冬瓜（去皮去籽）",120,"g"],["薑片",2,"片"],["鹽",null,"少許"]],"steps":["排骨燙去血水。","排骨、薑片加 500ml 水燉 30 分鐘。","放冬瓜再煮 15 分鐘到透明，加鹽。"],"tip":"肉吃起來要軟，啃骨頭附近的筋膜部分可以不吃。","mins":50},{"id":"s_radish_rib","cat":"S","name":"白蘿蔔排骨湯","ings":[["豬小排",100,"g"],["白蘿蔔（去皮）",120,"g"],["鹽",null,"少許"]],"steps":["排骨燙去血水。","加 500ml 水燉 30 分鐘。","放白蘿蔔再燉 20 分鐘到軟，加鹽。"],"tip":"白蘿蔔皮削厚一點。","mins":55},{"id":"s_egg_drop","cat":"S","name":"番茄蛋花湯","ings":[["番茄（去皮去籽）",80,"g"],["雞蛋",1,"顆"],["鹽",null,"少許"]],"steps":["番茄燙過去皮去籽、切丁。","加 400ml 水煮 5 分鐘到番茄化開。","淋入蛋液，加鹽。"],"tip":"番茄籽和皮一定要去乾淨。","mins":10},{"id":"s_miso_tofu","cat":"S","name":"味噌嫩豆腐湯","ings":[["嫩豆腐",80,"g"],["白味噌",15,"g"],["柴魚高湯",350,"ml"]],"steps":["高湯煮滾，放入切丁嫩豆腐。","關小火，味噌用湯匙拌開加入。","不要再大滾，即可盛起。"],"tip":"不加海帶芽、蔥花。","mins":10},{"id":"s_pumpkin","cat":"S","name":"南瓜濃湯","ings":[["南瓜（去皮去籽）",120,"g"],["洋蔥",20,"g"],["雞高湯",250,"ml"],["鹽",null,"少許"]],"steps":["南瓜、洋蔥切塊，加高湯煮 15 分鐘。","打成細滑的濃湯，調味。"],"tip":"不加鮮奶油也很濃郁。","mins":25},{"id":"s_fish_soup","cat":"S","name":"鱸魚薑絲湯","ings":[["鱸魚片（無刺）",80,"g"],["薑絲",2,"片"],["鹽",null,"少許"]],"steps":["水 400ml 加薑絲煮滾。","放鱸魚片煮 4 分鐘，撈浮沫。","加鹽。"],"tip":"鱸魚湯常被用於術後恢復，蛋白質好吸收。","mins":10},{"id":"s_chicken","cat":"S","name":"清燉雞湯","ings":[["雞腿（去皮帶骨）",1,"支"],["薑片",2,"片"],["鹽",null,"少許"]],"steps":["雞腿燙去血水。","加 600ml 水、薑片，小火燉 40 分鐘。","撈去浮油，加鹽。"],"tip":"可一次燉多一點，當其他料理的高湯。","mins":45},{"id":"s_carrot_potato","cat":"S","name":"紅蘿蔔馬鈴薯湯","ings":[["紅蘿蔔（去皮）",50,"g"],["馬鈴薯（去皮）",80,"g"],["豬小排",60,"g"],["鹽",null,"少許"]],"steps":["排骨燙過，加 500ml 水燉 20 分鐘。","放入切塊紅蘿蔔、馬鈴薯再燉 20 分鐘。","加鹽。"],"tip":"蔬菜燉到可以用湯匙壓碎。","mins":45},{"id":"n_banana","cat":"N","name":"熟香蕉","ings":[["香蕉",1,"根"]],"steps":["選表皮有小黑點的熟香蕉，直接吃。"],"tip":"生香蕉（偏綠）較澀不好消化。","mins":1},{"id":"n_apple_puree","cat":"N","name":"煮蘋果泥","ings":[["蘋果",1,"顆"],["砂糖",null,"少許"]],"steps":["蘋果削皮去核切小塊。","加 50ml 水小火煮 10 分鐘到軟。","壓成泥，放涼食用。"],"tip":"一定要去皮去核；煮過更好消化。","mins":15},{"id":"n_pudding","cat":"N","name":"雞蛋布丁","ings":[["雞蛋",1,"顆"],["砂糖",10,"g"],["水或少量鮮奶",100,"ml"]],"steps":["雞蛋、糖、液體拌勻，過篩。","倒入杯中蓋好，電鍋外鍋半杯水蒸熟。","放涼或冷藏。"],"tip":"低渣飲食通常建議少喝鮮奶，用水做也很嫩。","mins":25},{"id":"n_toast_jam","cat":"N","name":"白吐司抹果醬","ings":[["白吐司",1,"片"],["無籽果醬",10,"g"]],"steps":["白吐司烤熱或直接吃。","抹上無籽果醬（如蘋果、橘子醬）。"],"tip":"避免草莓、藍莓等帶籽果醬。","mins":3},{"id":"n_yogurt","cat":"N","name":"原味優格（少量）","ings":[["原味優格",100,"g"]],"steps":["直接食用，不加穀片、堅果、果乾。"],"tip":"若喝奶會腹瀉，就換成其他點心。","mins":1},{"id":"n_crackers","cat":"N","name":"蘇打餅乾","ings":[["蘇打餅乾",4,"片"]],"steps":["直接食用。"],"tip":"選原味蘇打餅，不要全麥或含芝麻的。","mins":1},{"id":"n_papaya","cat":"N","name":"木瓜","ings":[["木瓜（去籽）",150,"g"]],"steps":["去皮去籽，切塊食用。"],"tip":"選熟透的木瓜。","mins":3},{"id":"n_douhua","cat":"N","name":"嫩豆花（糖水）","ings":[["嫩豆花",1,"碗"]],"steps":["市售或自製豆花，搭配糖水。"],"tip":"不加紅豆、綠豆、花生、薏仁等配料。","mins":2},{"id":"n_rice_pudding","cat":"N","name":"米布丁粥","ings":[["白飯",0.5,"碗"],["水",200,"ml"],["砂糖",10,"g"]],"steps":["白飯加水小火煮 15 分鐘到濃稠。","加糖拌勻，放溫食用。"],"tip":"用剩飯就能做。","mins":15},{"id":"n_peach","cat":"N","name":"水蜜桃（去皮）","ings":[["水蜜桃",1,"顆"]],"steps":["削皮去核，切塊食用。"],"tip":"也可用糖水罐頭水蜜桃。","mins":3}],"plan":[{"b":["b_salmon_congee"],"l":["m_steam_bass","v_zucchini","s_melon_rib","rice"],"d":["m_chicken_potato","v_winter_melon","rice"],"n":["n_banana"]},{"b":["b_french_toast"],"l":["o_udon","v_loofah_egg"],"d":["m_minced_pork_tofu","v_carrot_egg","s_radish_rib","rice"],"n":["n_toast_jam"]},{"b":["b_pancake"],"l":["m_shrimp_egg","v_spinach","s_egg_drop","rice"],"d":["m_salmon_miso","v_pumpkin_mash","rice"],"n":["n_papaya"]},{"b":["b_steamed_egg_bun"],"l":["o_oyakodon","v_potato_mash"],"d":["m_teriyaki","v_cucumber","s_miso_tofu","rice"],"n":["n_peach"]},{"b":["b_potato_soup_toast"],"l":["m_steamed_patty","v_chayote","s_pumpkin","rice"],"d":["m_cod_steam","v_eggplant","rice"],"n":["n_pudding"]},{"b":["b_chicken_congee"],"l":["o_tomato_egg_noodle","v_radish"],"d":["m_chicken_egg","v_carrot_glaze","s_fish_soup","rice"],"n":["n_crackers"]},{"b":["b_noodle_soup"],"l":["m_tomato_beef","v_zucchini","s_chicken","rice"],"d":["m_fish_tofu","v_winter_melon","rice"],"n":["n_rice_pudding"]},{"b":["b_fish_congee"],"l":["o_pork_rice","v_loofah_egg"],"d":["m_pumpkin_chicken","v_carrot_egg","s_carrot_potato","rice"],"n":["n_apple_puree"]},{"b":["b_pork_congee"],"l":["m_lion_head","v_spinach","s_melon_rib","rice"],"d":["m_shrimp_scramble","v_pumpkin_mash","rice"],"n":["n_yogurt"]},{"b":["b_rice_noodle"],"l":["o_chicken_misua","v_potato_mash"],"d":["m_salmon_butter","v_cucumber","s_radish_rib","rice"],"n":["n_douhua"]},{"b":["b_egg_toast"],"l":["m_white_chicken","v_chayote","s_egg_drop","rice"],"d":["m_pork_slices","v_eggplant","rice"],"n":["n_banana"]},{"b":["b_tuna_sandwich"],"l":["o_salmon_risotto","v_radish"],"d":["m_chicken_meatball","v_carrot_glaze","s_miso_tofu","rice"],"n":["n_toast_jam"]},{"b":["b_salmon_congee"],"l":["m_egg_tofu","v_zucchini","s_pumpkin","rice"],"d":["m_steam_bass","v_winter_melon","rice"],"n":["n_papaya"]},{"b":["b_french_toast"],"l":["o_beef_noodle","v_loofah_egg"],"d":["m_chicken_potato","v_carrot_egg","s_fish_soup","rice"],"n":["n_peach"]},{"b":["b_pancake"],"l":["m_minced_pork_tofu","v_spinach","s_chicken","rice"],"d":["m_shrimp_egg","v_pumpkin_mash","rice"],"n":["n_pudding"]},{"b":["b_steamed_egg_bun"],"l":["o_fried_rice","v_potato_mash"],"d":["m_salmon_miso","v_cucumber","s_carrot_potato","rice"],"n":["n_crackers"]},{"b":["b_potato_soup_toast"],"l":["m_teriyaki","v_chayote","s_melon_rib","rice"],"d":["m_steamed_patty","v_eggplant","rice"],"n":["n_rice_pudding"]},{"b":["b_chicken_congee"],"l":["o_fish_rice_soup","v_radish"],"d":["m_cod_steam","v_carrot_glaze","s_radish_rib","rice"],"n":["n_apple_puree"]},{"b":["b_noodle_soup"],"l":["m_chicken_egg","v_zucchini","s_egg_drop","rice"],"d":["m_tomato_beef","v_winter_melon","rice"],"n":["n_yogurt"]},{"b":["b_fish_congee"],"l":["o_chawan_udon","v_loofah_egg"],"d":["m_fish_tofu","v_carrot_egg","s_miso_tofu","rice"],"n":["n_douhua"]},{"b":["b_pork_congee"],"l":["m_pumpkin_chicken","v_spinach","s_pumpkin","rice"],"d":["m_lion_head","v_pumpkin_mash","rice"],"n":["n_banana"]},{"b":["b_rice_noodle"],"l":["o_udon","v_potato_mash"],"d":["m_shrimp_scramble","v_cucumber","s_fish_soup","rice"],"n":["n_toast_jam"]},{"b":["b_egg_toast"],"l":["m_salmon_butter","v_chayote","s_chicken","rice"],"d":["m_white_chicken","v_eggplant","rice"],"n":["n_papaya"]},{"b":["b_tuna_sandwich"],"l":["o_oyakodon","v_radish"],"d":["m_pork_slices","v_carrot_glaze","s_carrot_potato","rice"],"n":["n_peach"]},{"b":["b_salmon_congee"],"l":["m_chicken_meatball","v_zucchini","s_melon_rib","rice"],"d":["m_egg_tofu","v_winter_melon","rice"],"n":["n_pudding"]},{"b":["b_french_toast"],"l":["o_tomato_egg_noodle","v_loofah_egg"],"d":["m_steam_bass","v_carrot_egg","s_radish_rib","rice"],"n":["n_crackers"]},{"b":["b_pancake"],"l":["m_chicken_potato","v_spinach","s_egg_drop","rice"],"d":["m_minced_pork_tofu","v_pumpkin_mash","rice"],"n":["n_rice_pudding"]},{"b":["b_steamed_egg_bun"],"l":["o_pork_rice","v_potato_mash"],"d":["m_shrimp_egg","v_cucumber","s_miso_tofu","rice"],"n":["n_apple_puree"]},{"b":["b_potato_soup_toast"],"l":["m_salmon_miso","v_chayote","s_pumpkin","rice"],"d":["m_teriyaki","v_eggplant","rice"],"n":["n_yogurt"]},{"b":["b_chicken_congee"],"l":["o_chicken_misua","v_radish"],"d":["m_steamed_patty","v_carrot_glaze","s_fish_soup","rice"],"n":["n_douhua"]}],"guide":[{"g":"主食・澱粉","ok":["白米飯、白粥、稀飯","白麵條、陽春麵、細麵、麵線（白）","烏龍麵、拉麵（清湯）、義大利麵（白）","米粉、冬粉、粄條、河粉","白吐司（去邊）、白饅頭、白餐包","蘇打餅乾、白蘿蔔糕（不煎焦）","去皮馬鈴薯、去皮芋頭（煮軟、少量）","米漿（過濾）"],"no":["糙米、五穀米、紫米、胚芽米","燕麥、薏仁、蕎麥、藜麥","全麥麵包、雜糧麵包、含葡萄乾或堅果的麵包","玉米、地瓜（纖維高）","油條、炸麵食、蔥油餅"]},{"g":"肉類","ok":["雞胸肉、去皮雞腿肉、雞絞肉","瘦豬肉、豬里肌（去筋）、瘦豬絞肉","豬小排（燉湯、肉燉軟）","瘦牛絞肉、牛腱（去筋燉軟）","火腿、雞肉丸、豬肉丸（少量，選低脂）"],"no":["肉皮、雞皮、肥肉","牛筋、豬腳、蹄筋、軟骨","油炸、燒烤焦的肉","香腸、培根、臘肉、辣味加工肉","內臟（請先問醫師）"]},{"g":"海鮮・魚類","ok":["鱸魚片（無刺）","鯛魚片（台灣鯛）","鮭魚（去皮去刺）","圓鱈（去刺）","旗魚、鮪魚（新鮮或水煮罐頭）","蝦仁（去腸泥）","干貝、花枝（切細、煮軟，少量）"],"no":["多刺魚：虱目魚、吳郭魚、秋刀魚、鯽魚、鯉魚","小魚乾、丁香魚（帶骨）","扁鱈、油魚（易腹瀉）","帶殼的貝類、蟹類（不好處理）","生魚片、未煮熟的海鮮"]},{"g":"蛋・豆製品","ok":["雞蛋：蒸蛋、炒蛋、蛋花、水煮蛋","皮蛋、鹹蛋（少量）","嫩豆腐、雞蛋豆腐","豆花（不加配料）","過濾豆漿（請依醫師指示）"],"no":["黃豆、黑豆、毛豆、紅豆、綠豆","花豆、皇帝豆、鷹嘴豆","豆干、豆皮、油豆腐（較硬或油炸）","溏心蛋、生蛋（恢復期請煮熟）"]},{"g":"蔬菜（去皮去籽、煮軟）","ok":["冬瓜","絲瓜（去皮）","櫛瓜（去皮去籽）","大黃瓜（去皮去籽）","佛手瓜（去皮）","胡瓜／蒲瓜（去皮）","紅蘿蔔（去皮）","白蘿蔔（去厚皮）","南瓜（去皮去籽）","茄子（去皮）","番茄（去皮去籽）","洋蔥（煮到軟爛、少量）","葉菜嫩葉：菠菜、莧菜、大白菜、高麗菜嫩葉（煮軟切碎）"],"no":["竹筍、蘆筍、芹菜、韭菜","空心菜、地瓜葉的粗梗","菇類、木耳、銀耳","海帶、紫菜、海帶芽、昆布","玉米、豌豆、青豆、四季豆、玉米筍","牛蒡、蓮藕、秋葵","生菜沙拉、任何生的蔬菜","辣椒、大蒜、蔥綠、香菜等辛香料"]},{"g":"水果","ok":["熟香蕉","蘋果（去皮，煮成泥更好）","木瓜（去籽）","水蜜桃（去皮）","西瓜（去籽，少量）","哈密瓜、香瓜（去皮去籽）","梨子（去皮，煮過更好）","罐頭水果：水蜜桃、梨（去汁少糖）","過濾果汁（無果肉）"],"no":["芭樂、奇異果、火龍果、百香果（籽多）","草莓、藍莓、葡萄、桑葚（帶皮籽）","鳳梨、芒果絲、柳丁柑橘的筋膜（纖維粗）","椰子肉、榴槤","果乾：葡萄乾、蔓越莓乾、蜜餞"]},{"g":"奶類","ok":["原味優格（少量）","起司片（少量）","料理用少量鮮奶油、奶油"],"no":["大量鮮奶、奶茶、乳酪蛋糕（易脹氣腹瀉，請依醫師指示）","含穀片、果粒、堅果的優格"]},{"g":"油脂・調味","ok":["植物油、橄欖油（少量）","奶油、香油（少量）","鹽、糖、醬油、味醂","白味噌（少量）","薑（煮湯用，不吃薑片）","太白粉、柴魚高湯、雞高湯"],"no":["堅果、芝麻、花生、瓜子、芝麻醬、花生醬","辣椒、辣椒醬、胡椒（大量）","沙茶、咖哩、豆瓣醬、麻辣","大蒜、蒜泥、芥末","大量油、油炸"]},{"g":"點心・飲品","ok":["雞蛋布丁、蒸蛋","白吐司抹無籽果醬","蘇打餅乾、原味餅乾","米布丁、白粥","果凍、愛玉、仙草（不加配料）","白開水、清湯、運動飲料（依醫師指示）","淡茶、麥茶"],"no":["巧克力、堅果餅乾、燕麥餅","紅豆湯、綠豆湯、花生湯","咖啡、濃茶、酒","汽水等碳酸飲料","油炸點心、洋芋片"]}]};
+const CREDITS = {"rice": {"t": "A bowl of white rice served with crispy chicken in sauce, topped with green onions and sesame seeds.", "by": "Alina Kakshapati", "lic": "CC0", "url": "https://wordpress.org/photos/photo/32869496d0/"}, "b_salmon_congee": {"t": "Fish congee", "by": "Neven Mrgan", "lic": "CC BY-NC-SA 2.0", "url": "https://www.flickr.com/photos/28922784@N00/8216411896"}, "b_chicken_congee": {"t": "Pumpkin soup", "by": "u m a m i", "lic": "CC BY-NC 2.0", "url": "https://www.flickr.com/photos/95842339@N00/55226371"}, "b_egg_toast": {"t": "Scrambled Egg Sandwich", "by": "Dave Lifson", "lic": "CC BY-NC 2.0", "url": "https://www.flickr.com/photos/47238113@N00/3356804858"}, "b_pork_congee": {"t": "Red Lantern @ Solaire- century egg & pork congee", "by": "Shoot First, Eat Later", "lic": "CC BY-NC 2.0", "url": "https://www.flickr.com/photos/93045861@N00/8654027483"}, "b_french_toast": {"t": "西多士 - 名茶餐厅 French Toast + HK Iced Tea - New Age Cafe, Box Hill", "by": "avlxyz", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/10559879@N00/876307132"}, "b_noodle_soup": {"t": "Soup with quail egg - Real Dry Noodle - Vietnamese Grill Bar", "by": "avlxyz", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/10559879@N00/2462987456"}, "b_tuna_sandwich": {"t": "Egg Salad Sandwich", "by": "wandersick", "lic": "CC BY 2.0", "url": "https://www.flickr.com/photos/20989767@N06/5698783698"}, "b_potato_soup_toast": {"t": "potato soup", "by": "stu_spivack", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/35034346243@N01/4451814959"}, "b_rice_noodle": {"t": "Rice vermicelli soup with fishballs and meatballs", "by": "Phoebe Lim", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/71837271@N00/8592420272"}, "b_pancake": {"t": "Banana Pancakes", "by": "babe_kl", "lic": "CC BY-NC 2.0", "url": "https://www.flickr.com/photos/14183017@N00/4364506764"}, "b_fish_congee": {"t": "fish congee with extra beef HK$38", "by": "Shoot First, Eat Later", "lic": "CC BY-NC 2.0", "url": "https://www.flickr.com/photos/93045861@N00/8630128019"}, "m_steam_bass": {"t": "Wild Barramundi, Baby Bokchoy - Tao Tao House", "by": "avlxyz", "lic": "CC BY-NC-SA 2.0", "url": "https://www.flickr.com/photos/10559879@N00/6980039832"}, "m_minced_pork_tofu": {"t": "Julia's steamed minced pork, tofu and salted egg, gaichoy, jasmine rice", "by": "avlxyz", "lic": "CC BY-NC-SA 2.0", "url": "https://www.flickr.com/photos/10559879@N00/9259494525"}, "m_chicken_potato": {"t": "Cream Stew", "by": "su-lin", "lic": "CC BY-NC-ND 2.0", "url": "https://www.flickr.com/photos/15157510@N00/553707105"}, "m_steamed_patty": {"t": "Entree @ Golden Taste Restaurant - 42 Bowery", "by": "wEnDaLicious", "lic": "CC BY-ND 2.0", "url": "https://www.flickr.com/photos/25597828@N00/406360961"}, "m_salmon_miso": {"t": "Miso salmon at The Cheesecake Factory", "by": "allaboutgeorge", "lic": "CC BY-ND 2.0", "url": "https://www.flickr.com/photos/35034347485@N01/5538201704"}, "m_chicken_egg": {"t": "Free-range, #organic #chickens scrambled eggs", "by": "GFDoctor", "lic": "CC BY-NC-SA 2.0", "url": "https://www.flickr.com/photos/39423925@N00/9459731360"}, "m_lion_head": {"t": "fusion #meatballs - #yiddish sweet and sour potted meatball + #shanghai lion head meatball mashup", "by": "willsfca", "lic": "CC BY-ND 2.0", "url": "https://www.flickr.com/photos/88992939@N00/8251865562"}, "m_shrimp_scramble": {"t": "shrimp with scrambled eggs", "by": "stu_spivack", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/35034346243@N01/9336352485"}, "m_salmon_butter": {"t": "Pan Seared Salmon with Crispy Skin on Baby Bok Choy with Red Pepper and Garlic Sauce", "by": "powerplantop", "lic": "CC BY-NC-ND 2.0", "url": "https://www.flickr.com/photos/40726522@N02/8012823174"}, "m_egg_tofu": {"t": "Julia's Steamed Egg Tofu before adding Soy Sauce", "by": "avlxyz", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/10559879@N00/3475335583"}, "o_udon": {"t": "Udon -Teriyaki Chicken with Udon Noodles - Ishikai AUD8.90", "by": "avlxyz", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/10559879@N00/2369842473"}, "o_oyakodon": {"t": "Oyakodon", "by": "HK-DMZ", "lic": "CC BY-NC-SA 2.0", "url": "https://www.flickr.com/photos/21936537@N03/4897975969"}, "o_pork_rice": {"t": "Minced Pork Rice", "by": "FoodishFetish", "lic": "CC BY-NC-ND 2.0", "url": "https://www.flickr.com/photos/71302541@N06/8258546091"}, "o_chicken_misua": {"t": "Misua Batchoy at Ted's Oldtimer Batchoy", "by": "georgeparrilla", "lic": "CC BY 2.0", "url": "https://www.flickr.com/photos/92444599@N00/3104805400"}, "o_fried_rice": {"t": "Egg Fried Rice", "by": "asiansupper", "lic": "CC BY-NC-SA 2.0", "url": "https://www.flickr.com/photos/50972149@N05/5639194653"}, "v_zucchini": {"t": "Sauteed zucchini and summer squash", "by": "TheFoodGroupie", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/61052907@N03/5645753567"}, "v_pumpkin_mash": {"t": "Mashed pumpkin flesh", "by": "Kitchen Wench", "lic": "CC BY-NC 2.0", "url": "https://www.flickr.com/photos/91812496@N00/2998021686"}, "v_potato_mash": {"t": "Thanksgiving dinner: mashed potato", "by": "eltpics", "lic": "CC BY-NC 2.0", "url": "https://www.flickr.com/photos/54942754@N02/15528810966"}, "s_egg_drop": {"t": "Tomato Egg Drop Soup attempt #1", "by": "@Damten", "lic": "CC BY-NC-ND 2.0", "url": "https://www.flickr.com/photos/66471950@N06/6266073631"}, "s_miso_tofu": {"t": "miso soup", "by": "stu_spivack", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/35034346243@N01/119067098"}, "s_pumpkin": {"t": "Keng Bouad Mak Fak Kham (coconut pumpkin soup)", "by": "stu_spivack", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/35034346243@N01/313561882"}, "s_carrot_potato": {"t": "Potato and Carrot Soup", "by": "lemonfilmblog", "lic": "CC BY-ND 2.0", "url": "https://www.flickr.com/photos/22245339@N05/8851951339"}, "n_banana": {"t": "banana", "by": "keepon", "lic": "CC BY 2.0", "url": "https://www.flickr.com/photos/44124364575@N01/15288615"}, "n_apple_puree": {"t": "Apples and Applesauce", "by": "Linda, Fortuna future", "lic": "CC BY-NC 2.0", "url": "https://www.flickr.com/photos/53470892@N08/40233729691"}, "n_pudding": {"t": "Custard pudding", "by": "yoshimov", "lic": "CC BY-ND 2.0", "url": "https://www.flickr.com/photos/69203469@N00/42270525"}, "n_toast_jam": {"t": "Toast with Jam", "by": "moriza", "lic": "CC BY 2.0", "url": "https://www.flickr.com/photos/44373968@N00/2390513602"}, "n_papaya": {"t": "papaya slices", "by": "preetamrai", "lic": "CC BY 2.0", "url": "https://www.flickr.com/photos/51035566865@N01/1317780"}, "n_douhua": {"t": "Flushing - Jade Asian Restaurant: Douhua", "by": "wallyg", "lic": "CC BY-NC-ND 2.0", "url": "https://www.flickr.com/photos/70323761@N00/6763974977"}, "n_rice_pudding": {"t": "Rice pudding: the finished product", "by": "randomduck", "lic": "CC BY-SA 2.0", "url": "https://www.flickr.com/photos/96463101@N00/428297650"}, "n_peach": {"t": "Peach Slices", "by": "neil conway", "lic": "CC BY 2.0", "url": "https://www.flickr.com/photos/30934989@N06/3824702094"}};
+const EMO = {B:'🥣',M:'🍲',O:'🍜',V:'🥕',S:'🥘',N:'🍮',R:'🍚'};
+const thumb = r => CREDITS[r.id] ? `<img class="thumb" loading="lazy" src="images/${r.id}.webp" alt="">` : `<div class="thumb">${EMO[r.cat]}</div>`;
+const RC = {}; DATA.recipes.forEach(r => RC[r.id] = r);
+const CATN = {B:'早餐',M:'主菜',O:'一碗料理',V:'蔬菜',S:'湯品',N:'點心',R:'主食'};
+const MEALS = [['b','早餐','☀️'],['l','午餐','🍱'],['d','晚餐','🌙'],['n','點心','🍌']];
+const DISC = '⚠️ 本菜單僅供參考，實際飲食內容、份量與期間請依醫師／營養師指示。若出現腹痛、黑便、血便、頭暈等情形，請立即就醫。';
+
+// ---- 儲存（失敗也不影響使用）----
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('lrm-'+k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('lrm-'+k, JSON.stringify(v)); }catch(e){} }
+};
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+let S = {
+  start: store.get('start', ymd(new Date())),
+  serv: store.get('serv', 1),
+  swaps: store.get('swaps', {}),
+  shop: store.get('shop', {}),
+};
+function save(){ store.set('start',S.start); store.set('serv',S.serv); store.set('swaps',S.swaps); store.set('shop',S.shop); }
+
+function dayInfo(){
+  const s = new Date(S.start+'T00:00:00'), t = new Date(ymd(new Date())+'T00:00:00');
+  const diff = Math.round((t - s)/86400000);
+  if (diff < 0) return {idx:0, round:1, before:-diff, total:diff};
+  return {idx: diff % 30, round: Math.floor(diff/30)+1, before:0, total:diff};
+}
+let viewDay = dayInfo().idx;
+
+function dishesOf(day, meal){
+  return DATA.plan[day][meal].map((id,i) => {
+    const k = day+'|'+meal+'|'+i;
+    return {id: S.swaps[k] || id, orig:id, key:k, swapped: !!S.swaps[k]};
+  });
+}
+function swap(key, cur){
+  const [day, meal, i] = key.split('|');
+  const orig = DATA.plan[day][meal][i];
+  const cat = RC[orig].cat;
+  const pool = DATA.recipes.filter(r => r.cat === cat).map(r => r.id);
+  // 一碗料理和早餐可互換到同類；主菜可在主菜池中輪換
+  let j = (pool.indexOf(cur)+1) % pool.length;
+  let nx = pool[j];
+  if (nx === orig) delete S.swaps[key]; else S.swaps[key] = nx;
+  save(); render();
+}
+
+// ---- 份量顯示 ----
+function fmtQ(q, u){
+  if (q == null) return u;
+  let v = q * S.serv;
+  if (u === 'g' || u === 'ml') { v = v >= 30 ? Math.round(v/5)*5 : Math.round(v); return v + ' ' + u; }
+  const whole = Math.floor(v), frac = v - whole;
+  let s = whole ? String(whole) : '';
+  if (Math.abs(frac-0.5) < 0.01) s += (s?' ':'') + '½';
+  else if (frac > 0.01) s = (Math.round(v*10)/10).toString();
+  return s + ' ' + u;
+}
+
+// ---- 今天 ----
+function renderToday(){
+  const info = dayInfo();
+  const el = document.getElementById('tab-today');
+  const isToday = viewDay === info.idx && !info.before;
+  let h = '';
+  if (info.before) h += `<div class="notice" style="background:var(--soft);color:var(--accent)">還有 ${info.before} 天才開始（開始日 ${S.start}），先看第 1 天的菜單。</div>`;
+  h += `<div class="daynav"><button class="btn" onclick="go(-1)">◀</button>
+    <div class="t"><b>第 ${viewDay+1} 天</b><span>${isToday ? '今天 · 第 '+info.round+' 輪' : '<a href="#" onclick="viewDay=dayInfo().idx;render();return false">回到今天</a>'}</span></div>
+    <button class="btn" onclick="go(1)">▶</button></div>`;
+  MEALS.forEach(([m, nm, ic]) => {
+    h += `<div class="card"><h2>${ic} ${nm}</h2>`;
+    dishesOf(viewDay, m).forEach(d => {
+      const r = RC[d.id];
+      h += `<div class="dish">${thumb(r)}<div class="nm" onclick="openR('${d.id}')"><b>${r.name}</b>${d.swapped?'<em class="swapped">已換</em>':''}<span>${CATN[r.cat]} · 約 ${r.mins} 分鐘 · 點我看食譜</span></div>`;
+      if (r.cat !== 'R') h += `<button class="btn" onclick="swap('${d.key}','${d.id}')">🔄 換</button>`;
+      h += `</div>`;
+    });
+    h += `</div>`;
+  });
+  h += `<div class="notice">${DISC}</div>`;
+  el.innerHTML = h;
+}
+function go(n){ viewDay = (viewDay + n + 30) % 30; render(); }
+
+// ---- 30 天菜單 ----
+function renderMenu(){
+  const info = dayInfo();
+  let h = `<p class="muted">點任一天看詳細內容。第 31 天起會自動從第 1 天重新輪。</p><div class="daygrid">`;
+  for (let d=0; d<30; d++){
+    const name = m => dishesOf(d, m).filter(x=>x.id!=='rice').map(x=>RC[x.id].name).join('、');
+    h += `<div class="dcard ${d===info.idx && !info.before?'today':''}" onclick="viewDay=${d};tab('today')"><b>第 ${d+1} 天</b>${d===info.idx && !info.before?' <span class="muted">（今天）</span>':''}
+      <div>☀️ <em>${name('b')}</em></div><div>🍱 <em>${name('l')}</em></div><div>🌙 <em>${name('d')}</em></div><div>🍌 <em>${name('n')}</em></div></div>`;
+  }
+  document.getElementById('tab-menu').innerHTML = h + '</div>';
+}
+
+// ---- 食譜 ----
+let rq = '', rc = '';
+function renderRecipes(){
+  const el = document.getElementById('tab-recipes');
+  if (!el.dataset.init){
+    el.innerHTML = `<input type="search" id="rq" placeholder="搜尋菜名或食材，例如：鮭魚、南瓜"><div class="chips" id="rcats" style="margin-top:10px"></div><div class="card rlist" id="rlist"></div>`;
+    el.dataset.init = 1;
+    document.getElementById('rq').addEventListener('input', e => { rq = e.target.value.trim(); renderRecipes(); });
+  }
+  document.getElementById('rcats').innerHTML = [['','全部'],...Object.entries(CATN)].map(([k,v]) => `<button class="chip ${rc===k?'on':''}" onclick="rc='${k}';renderRecipes()">${v}</button>`).join('');
+  const list = DATA.recipes.filter(r => (!rc || r.cat===rc) && (!rq || r.name.includes(rq) || r.ings.some(i => i[0].includes(rq))));
+  document.getElementById('rlist').innerHTML = list.length ? list.map(r => `<div class="dish">${thumb(r)}<div class="nm" onclick="openR('${r.id}')"><b>${r.name}</b><span>${CATN[r.cat]} · 約 ${r.mins} 分鐘 · ${r.ings.filter(i=>i[1]!=null).map(i=>i[0].replace(/（.*?）/,'')).slice(0,4).join('、')}</span></div></div>`).join('') : '<p class="muted">找不到符合的食譜</p>';
+}
+function openR(id){
+  const r = RC[id];
+  const main = r.ings.filter(i => i[1] != null), sea = r.ings.filter(i => i[1] == null);
+  let h = `<button class="btn close" onclick="closeM()">✕ 關閉</button><h2>${r.name}</h2>${CREDITS[id] ? `<img class="hero" src="images/${id}.webp" alt="${r.name}"><div class="credit">示意照片（實際做法以食譜為準）· 「${CREDITS[id].t}」by ${CREDITS[id].by} · ${CREDITS[id].lic} · <a href="${CREDITS[id].url}" target="_blank" rel="noopener">來源</a></div>` : ''}
+    <div class="meta">${CATN[r.cat]} · 約 ${r.mins} 分鐘 · ${S.serv} 人份</div>
+    <h3>食材</h3><table>${main.map(i => `<tr><td>${i[0]}</td><td>${fmtQ(i[1], i[2])}</td></tr>`).join('')}</table>`;
+  if (sea.length) h += `<h3>調味</h3><table>${sea.map(i => `<tr><td>${i[0]}</td><td>${i[2]}</td></tr>`).join('')}</table>`;
+  h += `<h3>做法</h3><ol>${r.steps.map(s => `<li>${s}</li>`).join('')}</ol>`;
+  if (r.tip) h += `<div class="tip">💡 ${r.tip}</div>`;
+  h += `<p class="muted" style="margin-top:14px">所有食材都要煮到軟爛；少油、不辣、不油炸。份量請依醫師／營養師建議調整。</p>`;
+  document.getElementById('sheet').innerHTML = h;
+  document.getElementById('modal').classList.add('show');
+}
+function closeM(){ document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeM(); });
+
+// ---- 採買清單 ----
+let shopWeek = null;
+function weeks(){ return [[0,6],[7,13],[14,20],[21,27],[28,29]]; }
+function renderShop(){
+  const W = weeks();
+  if (shopWeek == null){ const i = dayInfo().idx; shopWeek = W.findIndex(([a,b]) => i>=a && i<=b); }
+  const [a,b] = W[shopWeek];
+  const sum = {}, sea = new Set();
+  for (let d=a; d<=b; d++) MEALS.forEach(([m]) => dishesOf(d,m).forEach(x => RC[x.id].ings.forEach(([n,q,u]) => {
+    if (q == null){ sea.add(n); return; }
+    if (n === '白飯' && u === '碗'){ n = '白米'; q = q*80; u = 'g'; }
+    if (n === '水') return;
+    const k = n+'|'+u; sum[k] = (sum[k]||0) + q;
+  })));
+  const items = Object.entries(sum).sort((x,y) => x[0].localeCompare(y[0], 'zh-Hant'));
+  const wk = 'w'+shopWeek; const done = S.shop[wk] || {};
+  let h = `<div class="chips">${W.map(([x,y],i) => `<button class="chip ${i===shopWeek?'on':''}" onclick="shopWeek=${i};renderShop()">第 ${x+1}–${y+1} 天</button>`).join('')}</div>
+    <div class="card shop"><h2>🛒 採買清單 <span class="tag">${S.serv} 人份 · ${b-a+1} 天</span></h2><ul>`;
+  items.forEach(([k,q]) => { const [n,u] = k.split('|'); h += `<li class="${done[k]?'done':''}"><input type="checkbox" ${done[k]?'checked':''} onchange="tick('${wk}','${k}',this.checked)"><span>${n}</span><span class="q">${fmtQ(q,u)}</span></li>`; });
+  h += `</ul><p class="muted" style="margin:10px 0 0">數量是整週加總，已包含你換過的菜。肉魚可分裝冷凍，用前一晚移到冷藏退冰。</p>
+    <p style="margin:10px 0 0"><button class="btn" onclick="S.shop['${wk}']={};save();renderShop()">清除勾選</button></p></div>
+    <div class="card"><h2>🧂 常備調味料</h2><p style="margin:0">${[...sea].join('、')}</p></div>`;
+  document.getElementById('tab-shop').innerHTML = h;
+}
+function tick(wk, k, v){ S.shop[wk] = S.shop[wk] || {}; S.shop[wk][k] = v; save(); renderShop(); }
+
+// ---- 能不能吃 ----
+let gq = '';
+function renderGuide(){
+  const el = document.getElementById('tab-guide');
+  if (!el.dataset.init){
+    el.innerHTML = `<input type="search" id="gq" placeholder="查食材，例如：地瓜、芭樂、虱目魚"><div id="glist" style="margin-top:12px"></div>`;
+    el.dataset.init = 1;
+    document.getElementById('gq').addEventListener('input', e => { gq = e.target.value.trim(); renderGuide(); });
+  }
+  const f = arr => gq ? arr.filter(s => s.includes(gq)) : arr;
+  let h = '', hit = 0;
+  DATA.guide.forEach(g => {
+    const ok = f(g.ok), no = f(g.no); hit += ok.length + no.length;
+    if (gq && !ok.length && !no.length) return;
+    h += `<div class="card"><h2>${g.g}</h2><div class="guide"><div class="ok"><h3>✅ 可以吃</h3><ul>${ok.map(s=>`<li>${s}</li>`).join('') || '<li class="muted">—</li>'}</ul></div><div class="no"><h3>⛔ 避免</h3><ul>${no.map(s=>`<li>${s}</li>`).join('') || '<li class="muted">—</li>'}</ul></div></div></div>`;
+  });
+  if (gq && !hit) h = `<div class="card"><p style="margin:0">清單裡沒有「${gq}」。不確定的食材，原則是：<b>去皮、去籽、煮軟、不辣、不油炸</b>，有疑問請問醫師或營養師。</p></div>`;
+  h += `<div class="card"><h2>📌 低渣飲食原則</h2><ul style="margin:0;padding-left:20px"><li>選精緻白米、白麵，避免全穀類</li><li>蔬菜去皮去籽、煮到軟爛，避免粗纖維</li><li>選無刺魚片與嫩肉，去皮去筋</li><li>少油、不辣、不油炸，避免酒和咖啡</li><li>少量多餐、細嚼慢嚥、多喝水</li></ul></div><div class="notice">${DISC}</div>`;
+  document.getElementById('glist').innerHTML = h;
+}
+
+// ---- 設定 ----
+function openSet(){
+  document.getElementById('sheet').innerHTML = `<button class="btn close" onclick="closeM()">✕ 關閉</button><h2>設定</h2>
+    <div class="row"><label>開始日</label><input type="date" id="sStart" value="${S.start}"></div>
+    <div class="row"><label>份量</label><select id="sServ">${[1,2,3,4].map(n=>`<option value="${n}" ${n==S.serv?'selected':''}>${n} 人份</option>`).join('')}</select></div>
+    <p class="muted">開始日設好後，「今天」會自動顯示第幾天；30 天吃完自動重新輪。</p>
+    <div class="row"><button class="btn" onclick="if(confirm('把所有換過的菜恢復原本的菜單？')){S.swaps={};save();render();closeM()}">恢復原本菜單</button></div>
+    <div class="notice" style="margin-top:12px">${DISC}</div>
+    <p style="text-align:right"><button class="btn pri" onclick="saveSet()">儲存</button></p>`;
+  document.getElementById('modal').classList.add('show');
+}
+function saveSet(){
+  const v = document.getElementById('sStart').value; if (v) S.start = v;
+  S.serv = +document.getElementById('sServ').value || 1;
+  save(); viewDay = dayInfo().idx; shopWeek = null; closeM(); render();
+}
+document.getElementById('btnSet').onclick = openSet;
+
+// ---- 分頁 ----
+let cur = 'today';
+function tab(t){
+  cur = t;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  document.querySelectorAll('main > section').forEach(s => s.classList.toggle('hide', s.id !== 'tab-'+t));
+  render(); window.scrollTo(0,0);
+}
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => tab(b.dataset.t));
+function render(){
+  const info = dayInfo();
+  document.getElementById('hdrSub').textContent = info.before ? `${S.start} 開始` : `今天第 ${info.idx+1} 天 · ${S.serv} 人份`;
+  ({today:renderToday, menu:renderMenu, recipes:renderRecipes, shop:renderShop, guide:renderGuide})[cur]();
+}
+render();
+if (!store.get('seen', false)){ store.set('seen', true); openSet(); }
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
